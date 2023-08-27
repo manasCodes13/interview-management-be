@@ -6,7 +6,7 @@ const userSchema = new Schema({
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
     isEmailVerified: { type: Boolean, default: false, required: true },
-    // orgId: {type: String} 
+    orgId: {type: Schema.Types.ObjectId, ref: 'Organization'},
     isDeleted: { type: Boolean, default: false, required: true },
     role: { type: String, required: true, default: "admin", role: ["admin", "user"] }
 }, { timestamps: true })

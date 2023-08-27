@@ -1,0 +1,170 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  description: Optional multiline or single-line description in HTML.
+  version: 0.1.9
+servers:
+  - url: http://localhost:8000/api
+tags:
+  - name: auth
+    description: All the Authentication API
+  - name: organization
+    description: All the Organization API
+  - name: common
+    description: All the Common API
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - auth
+      operationId: authRegister
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+        required: true
+      responses:
+        "200": # status code
+          description: success
+
+  /auth/verifyOtp:
+    post:
+      tags:
+        - auth
+      operationId: authverifyOtp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                otp:
+                  type: number
+        required: true
+      responses:
+        "200": # status code
+          description: success
+
+  /auth/resendOtp:
+    post:
+      tags:
+        - auth
+      operationId: authresendOtp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+        required: true
+      responses:
+        "200": # status code
+          description: success
+
+  /auth/login:
+    post:
+      tags:
+        - auth
+      operationId: authlogin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: success
+
+  /organization/create:
+    post:
+      tags:
+        - organization
+      operationId: organizationcreate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                orgName:
+                  type: string
+                orgUsername:
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: success
+      security:
+        - bearerAuth: []
+
+  /common/updateUser:
+    put:
+      tags:
+        - common
+      operationId: commonCreate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                data:
+                  type: object
+        required: true
+      responses:
+        "200":
+          description: success
+      security:
+        - bearerAuth: []
+
+  /common/getUserDetails:
+    get:
+      tags:
+        - common
+      operationId: commonGetUserDetails
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        "200":
+          description: success
+      security:
+        - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
