@@ -5,6 +5,7 @@
   "author": "manas",
   "license": "MIT",
   "scripts": {
+    "preinstall": "npx only-allow yarn",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
@@ -20,6 +21,8 @@
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.1",
     "mongoose": "^7.4.1",
-    "nodemailer": "^6.9.4"
+    "nodemailer": "^6.9.4",
+    "swagger-ui-express": "^5.0.0",
+    "yamljs": "^0.3.0"
   }
 }
