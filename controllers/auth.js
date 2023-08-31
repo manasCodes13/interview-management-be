@@ -30,7 +30,11 @@ const registerController = async (req, res) => {
     const encryptPassword = bcrypt.hashSync(password, 10);
 
     const otp = generateOTp;
-    emailSender(email, otp);
+
+    const html = `<h1>OTP: ${otp}</h1>`
+    const subject = "OTP"
+
+    emailSender(email, html, subject);
 
     const addUser = new User({
       email: email,
@@ -111,7 +115,11 @@ const resendOtp = async (req, res) => {
   const otp = generateOTp;
 
   await OTP.findOneAndUpdate({ userId: checkForUser?._id }, { otp: otp });
-  emailSender(email, otp);
+
+  const html = `<h1>OTP: ${otp}</h1>`
+  const subject = "OTP"
+
+  emailSender(email, html, subject);
 
   return res.status(200).json({
     status: 200,
@@ -122,10 +130,10 @@ const resendOtp = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  if(!email || !password) {
+  if (!email || !password) {
     res.status(400).json({
-        status: 400,
-        message: "Email and Password is needed"
+      status: 400,
+      message: "Email and Password is needed"
     })
     return;
   }
