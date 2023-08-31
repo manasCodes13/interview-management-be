@@ -1,5 +1,6 @@
-const mongoose = require("mongoose");
 const User = require("../models/User.model");
+const emailSender = require("../helpers/emailSender");
+
 
 const updateUserDetails = async (req, res) => {
     const { email, data } = req.body;
@@ -82,6 +83,32 @@ const getUserDetails = async (req, res) => {
         data: getUserDetails
     })
 
+
+
+}
+
+const inviteUser = async (req, res) => {
+    const { email, role, orgId } = req.body;
+
+    // check for user 
+    const checkForUser = await User.findOne({
+        email: email
+    })
+
+    if (checkForUser && checkForUser?.orgId) {
+        res.status(400).json({
+            status: 400,
+            message: "User is already associated with an organization"
+        })
+        return;
+    }
+    else if (checkForUser && !checkForUser?.orgId) {
+        const html = `<h1>Thanks For Choosing us</h1>
+        <p>Click on the below button to accept the invite</p>
+        <a href="http://localhost:3000/invite-user?email="${email}&org="${orgId}"><button>Click Here</button></a>`
+        const subject = "Invite to yuva-projects"
+        emailSender(email, html, subject)
+    }
 
 
 }

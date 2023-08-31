@@ -10,12 +10,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = async (email, otp) => {
+const sendEmail = async (email, html, subject) => {
   await transporter.sendMail({
     from: "amr1313mk@gmail.com",
     to: email,
-    subject: "OTP",
-    html: `<h1>OTP: ${otp}</h1>`,
+    subject: subject,
+    html: html,
   });
 };
 
