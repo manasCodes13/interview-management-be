@@ -118,8 +118,7 @@ paths:
       responses:
         "200":
           description: success
-      security:
-        - bearerAuth: []
+      security: []
 
   /common/updateUser:
     put:
