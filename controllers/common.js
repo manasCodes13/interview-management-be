@@ -56,6 +56,7 @@ const getUserDetails = async (req, res) => {
     if (!checkForuser) {
         res.status(400).json({
             status: 400,
+            success: false,
             message: "User doesn't exist"
         })
         return;
@@ -80,7 +81,8 @@ const getUserDetails = async (req, res) => {
 
     res.status(200).json({
         status: 200,
-        data: getUserDetails
+        success: true,
+        data: getUserDetails?.[0]
     })
 
 
