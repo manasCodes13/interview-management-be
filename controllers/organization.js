@@ -9,6 +9,7 @@ const createOrgaization = async (req, res) => {
         if (!orgName || !orgUsername || !email) {
             res.status(400).json({
                 status: 400,
+                success: false,
                 message: "Please fill all the required fields"
             })
             return;
@@ -25,6 +26,7 @@ const createOrgaization = async (req, res) => {
         if (!checkForUser) {
             res.status(400).json({
                 status: 400,
+                success: false,
                 message: "User doesn't exist"
             })
             return;
@@ -33,6 +35,7 @@ const createOrgaization = async (req, res) => {
         if (checkForOrganization) {
             res.status(400).json({
                 status: 400,
+                success: false,
                 message: "Organization already exists"
             })
             return;
@@ -58,16 +61,20 @@ const createOrgaization = async (req, res) => {
 
         return res.status(200).json({
             status: 200,
+            success: true,
             message: "Organization created successfully"
         })
     }
     catch (err) {
         return res.status(500).json({
             status: 500,
+            success: false,
             message: "Internal Server Error"
         })
     }
 
 }
+
+// const JoinOrganization = async 
 
 module.exports = { createOrgaization }
