@@ -1,4 +1,7 @@
 const nodemailer = require("nodemailer");
+const handlebars = require("handlebars")
+const fs = require("fs")
+const path = require("path")
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -18,6 +21,8 @@ const sendEmail = async (email, html, subject) => {
     html: html,
   });
 };
+
+console.log('sendEmail±', sendEmail)
 
 
 module.exports = sendEmail;
