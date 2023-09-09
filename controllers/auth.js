@@ -72,50 +72,50 @@ const verifyOtp = async (req, res) => {
 
   try {
 
-  const checkForUser = await User.findOne({
-    email: email,
-  });
-
-  if (!checkForUser) {
-    res.status(400).json({
-      status: 400,
-      success: false,
-      message: "User not found",
+    const checkForUser = await User.findOne({
+      email: email,
     });
-    return;
+
+    if (!checkForUser) {
+      res.status(400).json({
+        status: 400,
+        success: false,
+        message: "User not found",
+      });
+      return;
+    }
+
+    const checkForOtp = await OTP.findOne({
+      userId: checkForUser?._id,
+      otp: otp,
+    });
+
+    if (checkForOtp) {
+      await User.findOneAndUpdate(
+        { _id: checkForUser?.id },
+        { isEmailVerified: true }
+      );
+
+      res.status(200).json({
+        success: true,
+        status: 200,
+        message: "OTP Matched Successfully",
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        status: 400,
+        message: "OTP didn't match",
+      });
+    }
   }
-
-  const checkForOtp = await OTP.findOne({
-    userId: checkForUser?._id,
-    otp: otp,
-  });
-
-  if (checkForOtp) {
-    await User.findOneAndUpdate(
-      { _id: checkForUser?.id },
-      { isEmailVerified: true }
-    );
-
-    res.status(200).json({
-      success: true,
-      status: 200,
-      message: "OTP Matched Successfully",
-    });
-  } else {
-    res.status(400).json({
+  catch (err) {
+    res.status(500).json({
       success: false,
-      status: 400,
-      message: "OTP didn't match",
+      status: 500,
+      message: "Internal Server Error",
     });
   }
-}
-catch(err) {
-  res.status(500).json({
-    success: false,
-    status: 500,
-    message: "Internal Server Error",
-  });
-}
 };
 
 const resendOtp = async (req, res) => {
@@ -126,97 +126,95 @@ const resendOtp = async (req, res) => {
     // check for user
     const checkForUser = await User.findOne({
       email: email,
-  });
-
-  if (!checkForUser) {
-    res.status(400).json({
-      status: 400,
-      success: false,
-      message: "User not found",
     });
-    return;
+
+    if (!checkForUser) {
+      res.status(400).json({
+        status: 400,
+        success: false,
+        message: "User not found",
+      });
+      return;
+    }
+
+    const otp = generateOTp;
+
+    await OTP.findOneAndUpdate({ userId: checkForUser?._id }, { otp: otp });
+
+    const html = `<h1>OTP: ${otp}</h1>`
+    const subject = "OTP"
+
+    emailSender(email, html, subject);
+
+    return res.status(200).json({
+      status: 200,
+      success: true,
+      message: "OTP Resend Successfully",
+    });
   }
-  
-  const otp = generateOTp;
-  
-  await OTP.findOneAndUpdate({ userId: checkForUser?._id }, { otp: otp });
-  
-  const html = `<h1>OTP: ${otp}</h1>`
-  const subject = "OTP"
-  
-  emailSender(email, html, subject);
-  
-  return res.status(200).json({
-    status: 200,
-    success: true,
-    message: "OTP Resend Successfully",
-  });
-}
-catch(err) {
-  return res.status(500).json({
-    status: 500,
-    success: false,
-    message: "Internal Server Error",
-  });
-}
+  catch (err) {
+    return res.status(500).json({
+      status: 500,
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    if (!email || !password) {
+      res.status(400).json({
+        status: 400,
+        success: false,
+        message: "Email and Password is needed"
+      })
+      return;
+    }
 
-
-  if (!email || !password) {
-    res.status(400).json({
-      status: 400,
-      success: false,
-      message: "Email and Password is needed"
+    // check For User
+    const checkForUser = await User.findOne({
+      email: email,
     })
-    return;
+
+    if (!checkForUser) {
+      res.status(400).json({
+        status: 400,
+        success: false,
+        message: "User doesn't exist",
+      });
+      return;
+    }
+
+    // create jsonwebtoken
+    const token = await createJsonWebToken(checkForUser);
+    const checkForPassword = bcrypt.compareSync(password, checkForUser?.password);
+
+    if (checkForPassword) {
+      return res.status(200).json({
+        status: 200,
+        success: true,
+        message: "Logged in successfully",
+        data: checkForUser,
+        accessToken: token,
+      });
+    } else {
+      return res.status(400).json({
+        status: 400,
+        success: false,
+        message: "Password is wrong",
+      });
+    }
   }
-
-  // check For User
-  const checkForUser = await User.findOne({
-    email: email,
-  })
-
-  if (!checkForUser) {
-    res.status(400).json({
-      status: 400,
+  catch (err) {
+    return res.status(500).json({
+      status: 500,
       success: false,
-      message: "User doesn't exist",
-    });
-    return;
-  }
-
-  // create jsonwebtoken
-  const token = await createJsonWebToken(checkForUser);
-  const checkForPassword = bcrypt.compareSync(password, checkForUser?.password);
-
-  if (checkForPassword) {
-    return res.status(200).json({
-      status: 200,
-      success: true,
-      message: "Logged in successfully",
-      data: checkForUser,
-      accessToken: token,
-    });
-  } else {
-    return res.status(400).json({
-      status: 400,
-      success: false,
-      message: "Password is wrong",
+      message: "Internal Server Error",
     });
   }
-}
-catch(err) {
-  return res.status(500).json({
-    status: 500,
-    success: false,
-    message: "Internal Server Error",
-  });
-}
 };
 
 // TODO: have to do forget password after frontend

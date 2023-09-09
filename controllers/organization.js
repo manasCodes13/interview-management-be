@@ -282,7 +282,7 @@ const inviteTeamMates = async (req, res) => {
     else {
         // email, html, subject
         const html = emailForInvitation(checkForUserEmail?.orgId)
-        await sendEmail(userEmail, html, "Invitation")
+        sendEmail(userEmail, html, "Invitation")
     }
 
     res.status(200).json({
@@ -314,7 +314,7 @@ const joinOrganization = async (req, res) => {
         // update user
         const updateUser = await User.findOneAndUpdate({
             email: email,
-        }, { orgId: id }, { new: true })
+        }, { orgId: id, role: "member" }, { new: true })
 
         if (updateUser) {
             res.status(200).json({

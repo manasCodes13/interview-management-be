@@ -1,5 +1,5 @@
 const User = require("../models/User.model");
-const emailSender = require("../helpers/emailSender");
+const Organization = require("../models/Orgnization.modal");
 
 
 const updateUserDetails = async (req, res) => {
@@ -33,6 +33,7 @@ const updateUserDetails = async (req, res) => {
 
         return res.status(200).json({
             message: "User updated successfully",
+            success: true,
             status: 200
         })
 
@@ -89,30 +90,43 @@ const getUserDetails = async (req, res) => {
 
 }
 
-const inviteUser = async (req, res) => {
-    const { email, role, orgId } = req.body;
+const getTeammates = async (req, res) => {
+    const { orgId } = req.query;
 
-    // check for user 
-    const checkForUser = await User.findOne({
-        email: email
-    })
-
-    if (checkForUser && checkForUser?.orgId) {
+    if (!orgId) {
         res.status(400).json({
             status: 400,
-            message: "User is already associated with an organization"
+            success: false,
+            message: "Please send us the organization Id"
+        })
+    }
+
+    const checkForOrgId = await Organization.findOne({
+        _id: orgId
+    })
+
+    if (!checkForOrgId) {
+        res.status(400).json({
+            status: 400,
+            success: false,
+            message: "Organization doesn't exist"
         })
         return;
     }
-    else if (checkForUser && !checkForUser?.orgId) {
-        const html = `<h1>Thanks For Choosing us</h1>
-        <p>Click on the below button to accept the invite</p>
-        <a href="http://localhost:3000/invite-user?email="${email}&org="${orgId}"><button>Click Here</button></a>`
-        const subject = "Invite to yuva-projects"
-        emailSender(email, html, subject)
-    }
+
+    // check for all users 
+    const checkForAllUser = await User.find({
+        orgId: orgId
+    });
+
+    return res.status(200).json({
+        status: 200,
+        success: true,
+        message: "All Joined Users",
+        data: checkForAllUser
+    })
 
 
 }
 
-module.exports = { updateUserDetails, getUserDetails }
+module.exports = { updateUserDetails, getUserDetails, getTeammates }

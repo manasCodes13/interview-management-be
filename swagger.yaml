@@ -120,6 +120,53 @@ paths:
           description: success
       security: []
 
+  /organization/invite-teamMates:
+    post:
+      tags:
+        - organization
+      operationId: organizationinviteteammates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                userEmail:
+                  type: string
+                  format: email
+        required: true
+      responses:
+        "200":
+          description: success
+      security:
+        - bearerAuth: []
+
+  /organization/join-organization:
+    post:
+      tags:
+        - organization
+      operationId: organizationjoin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                id:
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: success
+      security:
+        - bearerAuth: []
+
   /common/updateUser:
     put:
       tags:
