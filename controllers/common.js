@@ -129,4 +129,5 @@ const getTeammates = async (req, res) => {
 
 }
 
+
 module.exports = { updateUserDetails, getUserDetails, getTeammates }
