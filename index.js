@@ -8,6 +8,8 @@ const app = express();
 const mainRouter = require("./routes/index");
 const swaggerDocument = YAML.load('./swagger.yaml');
 
+console.log("checking");
+
 
 const port = process.env.PORT;
 const db = process.env.DB;
